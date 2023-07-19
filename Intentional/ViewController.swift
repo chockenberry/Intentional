@@ -32,6 +32,7 @@ class ViewController: UIViewController {
 	}
 
 	@IBAction func incrementCount() {
+		// NOTE: After updating the model, let the widget renderer know by reloading the timelines.
 		WidgetModel.incrementCount()
 		WidgetCenter.shared.reloadAllTimelines()
 

@@ -69,6 +69,7 @@
 		4439175F2A684742003A9924 /* WidgetModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetModel.swift; sourceTree = "<group>"; };
 		443917622A684776003A9924 /* WidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetExtension.entitlements; sourceTree = "<group>"; };
 		443917632A68478F003A9924 /* Intentional.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Intentional.entitlements; sourceTree = "<group>"; };
+		44A9AB732A687E3B001D2CD1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +95,7 @@
 		443917222A684618003A9924 = {
 			isa = PBXGroup;
 			children = (
+				44A9AB732A687E3B001D2CD1 /* README.md */,
 				443917622A684776003A9924 /* WidgetExtension.entitlements */,
 				4439172D2A684618003A9924 /* Intentional */,
 				4439174C2A684657003A9924 /* Widget */,

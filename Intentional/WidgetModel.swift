@@ -119,7 +119,7 @@ struct WidgetSelectIntent: AppIntent {
 	static var description = IntentDescription("Select an item in the model using its ID")
 	
 	// NOTE: This @Parameter definition is unused, but is required initialize the stored properties of
-	// the AppIntent's struct. The selectingId is set directly using the initializer.
+	// the AppIntent's struct. The selectingId is set directly using the initializer below.
 	@Parameter(title: "selectingId", description: "The ID to select")
 	var selectingId: String
 	
