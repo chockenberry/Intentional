@@ -54,7 +54,12 @@ class WidgetModel {
 		debugLog("count = \(count)")
 		sharedDefaults.set(count, forKey: countKey)
 	}
-	
+
+	static func setCount(_ count: Int) {
+		debugLog("count = \(count)")
+		sharedDefaults.set(count, forKey: countKey)
+	}
+
 	static var currentCount: Int {
 		let currentCount = sharedDefaults.integer(forKey: countKey)
 		debugLog("currentCount = \(currentCount)")
@@ -134,7 +139,90 @@ struct WidgetSelectIntent: AppIntent {
 	func perform() async throws -> some IntentResult {
 		debugLog("selectingId = \(selectingId)")
 		WidgetModel.selectedId = selectingId
+		
+		#if !IS_WIDGETS_EXTENSION
+		#endif
+		
 		return .result()
 	}
 	
+}
+
+// NOTE: The code below to add Shortcuts support for the model is work-in-progress.
+
+// NOTE: A lot of ideas here were adapted from Booky: https://github.com/mralexhay/Booky
+
+struct ShortcutsModelEntity: Identifiable, Hashable, Equatable, TransientAppEntity {
+	init() {
+	}
+	
+	static var typeDisplayRepresentation = TypeDisplayRepresentation(name: "Model")
+	
+	var id = UUID()
+	
+	@Property(title: "Count")
+	var count: Int
+	
+	@Property(title: "Selected ID")
+	var selectedId: String
+
+	init(id: UUID, count: Int?, selectedId: String?) {
+		self.id = id
+		self.count = count ?? 0
+		self.selectedId = selectedId ?? ""
+	}
+	
+	var displayRepresentation: DisplayRepresentation {
+		return DisplayRepresentation(
+			title: "\(count) count",
+			subtitle: "selected \(selectedId)"
+		)
+	}
+}
+
+extension ShortcutsModelEntity {
+	
+	// Hashable conformance
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(id)
+	}
+	
+	// Equtable conformance
+	static func ==(lhs: ShortcutsModelEntity, rhs: ShortcutsModelEntity) -> Bool {
+		return lhs.id == rhs.id
+	}
+	
+}
+
+
+struct UpdateModel: AppIntent {
+	
+	// the name of the action in Shortcuts
+	static var title: LocalizedStringResource = "Update Model"
+	
+	// description of the action in Shortcuts
+	// category name allows you to group actions - shown when tapping on an app in the Shortcuts library
+	static var description: IntentDescription = IntentDescription("Update the model.", categoryName: "Editing")
+	
+	@Parameter(title: "Count", description: "The model's count", default: 0, requestValueDialog: IntentDialog("What is the count?"))
+	var count: Int
+	
+	@Parameter(title: "Selected ID", description: "The model's ID", requestValueDialog: IntentDialog("What is the selected ID?"))
+	var selectedId: String
+	
+	// How the summary will appear in the shortcut action.
+	// More parameters are included below the fold in the trailing closure. In Shortcuts, they are listed in the reverse order they are listed here
+	static var parameterSummary: some ParameterSummary {
+		Summary("Update \(\.$selectedId) with \(\.$count)")
+	}
+
+	//@MainActor // <-- include if the code needs to be run on the main thread
+	func perform() async throws -> some ReturnsValue<ShortcutsModelEntity> {
+
+		WidgetModel.setCount(count)
+		WidgetModel.selectedId = selectedId
+		let entity = ShortcutsModelEntity(id: UUID(), count: WidgetModel.currentCount, selectedId: WidgetModel.selectedId)
+
+		return .result(value: entity)
+	}
 }
