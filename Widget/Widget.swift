@@ -7,7 +7,6 @@
 
 import WidgetKit
 import SwiftUI
-import AppIntents
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
@@ -55,10 +54,11 @@ struct WidgetEntryView : View {
 	// NOTE: The WidgetModel needs a group container: make sure that entitlement is granted
 	// to the widget extension.
 	
-#if targetEnvironment(simulator)
-	// NOTE: In theory, the Widget preview and UserDefaults for the app should be shared. In
-	// practice, this is buggy. To minimize confusion, you can force the model to be populated
-	// at design time.
+// NOTE: In theory, the Widget preview and UserDefaults for the app should be shared. In
+// practice, this is buggy (see WidgetModel.swift to understand how group containers differ
+// between the two environments. To minimize confusion, you can force the model to be populated
+// at design time by setting this flag to true:
+#if false
 #if !DEBUG
 #error("Using test data in non-DEBUG build")
 #endif
@@ -75,7 +75,7 @@ struct WidgetEntryView : View {
 	}
 #endif
 	
-	@State var widgetData = WidgetModel.widgetData
+	var widgetData = WidgetModel.widgetData
 	
     var body: some View {
 		if widgetData.isEmpty {
