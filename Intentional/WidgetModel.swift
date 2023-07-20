@@ -123,6 +123,12 @@ struct WidgetSelectIntent: AppIntent {
 	static var title: LocalizedStringResource = "Select by ID"
 	static var description = IntentDescription("Select an item in the model using its ID")
 	
+	// NOTE: This prevents this AppIntent from appearing in Shortcuts and Spotlight. Since the widget
+	// interaction uses an internal id that's not meaningful to the customer, this intent is hidden.
+	static var isDiscoverable: Bool {
+		return false
+	}
+	
 	// NOTE: This @Parameter definition is unused, but is required initialize the stored properties of
 	// the AppIntent's struct. The selectingId is set directly using the initializer below.
 	@Parameter(title: "selectingId", description: "The ID to select")
@@ -195,7 +201,7 @@ extension ShortcutsModelEntity {
 }
 
 
-struct UpdateModel: AppIntent {
+struct UpdateModelIntent: AppIntent {
 	
 	// the name of the action in Shortcuts
 	static var title: LocalizedStringResource = "Update Model"
@@ -224,5 +230,20 @@ struct UpdateModel: AppIntent {
 		let entity = ShortcutsModelEntity(id: UUID(), count: WidgetModel.currentCount, selectedId: WidgetModel.selectedId)
 
 		return .result(value: entity)
+	}
+}
+
+// NOTE: The following provider allows the AppIntent to show up in a Spotlight search.
+
+struct IntentionalAppShortcutsProvider: AppShortcutsProvider {
+	static var appShortcuts: [AppShortcut] {
+		AppShortcut(
+			intent: UpdateModelIntent(),
+			phrases: [
+				"Update a \(.applicationName) model"
+			],
+			shortTitle: "Update Model",
+			systemImageName: "rectangle.and.pencil.and.ellipsis"
+		)
 	}
 }
