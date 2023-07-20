@@ -270,11 +270,17 @@ struct UpdateDatumIntent: AppIntent {
 // NOTE: The following provider allows the AppIntent to show up in a Spotlight search.
 
 struct IntentionalAppShortcutsProvider: AppShortcutsProvider {
+	
+	static var shortcutTileColor: ShortcutTileColor {
+		return .lime
+	}
+
 	static var appShortcuts: [AppShortcut] {
 		AppShortcut(
 			intent: UpdateModelIntent(),
 			phrases: [
 				"Update a \(.applicationName) model"
+				// NOTE: Multiple phrases can be supplied to aid with matching (e.g. with Siri)
 			],
 			shortTitle: "Update Model",
 			systemImageName: "rectangle.and.pencil.and.ellipsis"
