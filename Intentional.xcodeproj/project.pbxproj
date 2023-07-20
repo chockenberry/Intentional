@@ -23,6 +23,8 @@
 		4439175E2A6846BB003A9924 /* Debug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4439175C2A6846BB003A9924 /* Debug.swift */; };
 		443917602A684742003A9924 /* WidgetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4439175F2A684742003A9924 /* WidgetModel.swift */; };
 		443917612A684742003A9924 /* WidgetModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4439175F2A684742003A9924 /* WidgetModel.swift */; };
+		44A9AB762A69B3E5001D2CD1 /* AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A9AB752A69B3E5001D2CD1 /* AppIntents.swift */; };
+		44A9AB772A69B3E5001D2CD1 /* AppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44A9AB752A69B3E5001D2CD1 /* AppIntents.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +72,7 @@
 		443917622A684776003A9924 /* WidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = WidgetExtension.entitlements; sourceTree = "<group>"; };
 		443917632A68478F003A9924 /* Intentional.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Intentional.entitlements; sourceTree = "<group>"; };
 		44A9AB732A687E3B001D2CD1 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		44A9AB752A69B3E5001D2CD1 /* AppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppIntents.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,11 +119,11 @@
 		4439172D2A684618003A9924 /* Intentional */ = {
 			isa = PBXGroup;
 			children = (
+				44A9AB742A69B3BD001D2CD1 /* Shared */,
 				443917632A68478F003A9924 /* Intentional.entitlements */,
 				4439172E2A684618003A9924 /* AppDelegate.swift */,
 				443917302A684618003A9924 /* SceneDelegate.swift */,
 				443917322A684618003A9924 /* ViewController.swift */,
-				4439175F2A684742003A9924 /* WidgetModel.swift */,
 				4439175C2A6846BB003A9924 /* Debug.swift */,
 				443917342A684618003A9924 /* Main.storyboard */,
 				443917372A68461B003A9924 /* Assets.xcassets */,
@@ -148,6 +151,15 @@
 				443917532A684659003A9924 /* Info.plist */,
 			);
 			path = Widget;
+			sourceTree = "<group>";
+		};
+		44A9AB742A69B3BD001D2CD1 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				4439175F2A684742003A9924 /* WidgetModel.swift */,
+				44A9AB752A69B3E5001D2CD1 /* AppIntents.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -257,6 +269,7 @@
 				443917602A684742003A9924 /* WidgetModel.swift in Sources */,
 				4439172F2A684618003A9924 /* AppDelegate.swift in Sources */,
 				443917312A684618003A9924 /* SceneDelegate.swift in Sources */,
+				44A9AB762A69B3E5001D2CD1 /* AppIntents.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,6 +278,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				4439174E2A684657003A9924 /* WidgetBundle.swift in Sources */,
+				44A9AB772A69B3E5001D2CD1 /* AppIntents.swift in Sources */,
 				443917612A684742003A9924 /* WidgetModel.swift in Sources */,
 				4439175E2A6846BB003A9924 /* Debug.swift in Sources */,
 				443917502A684657003A9924 /* Widget.swift in Sources */,

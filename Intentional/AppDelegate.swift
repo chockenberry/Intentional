@@ -23,14 +23,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 			debugLog("groupContainerUrl = `\(groupContainerUrl.path(percentEncoded: false))`")
 		}
 
-		let widgetData = [
-			WidgetModel.WidgetDatum(id: "1", name: "A"),
-			WidgetModel.WidgetDatum(id: "2", name: "BB"),
-			WidgetModel.WidgetDatum(id: "3", name: "CCC"),
-			WidgetModel.WidgetDatum(id: "4", name: "DDDD"),
-		]
-		WidgetModel.widgetData = widgetData
-		WidgetCenter.shared.reloadAllTimelines()
+		if WidgetModel.widgetData.isEmpty {
+			let widgetData = [
+				WidgetModel.WidgetDatum(id: "1", name: "A"),
+				WidgetModel.WidgetDatum(id: "2", name: "BB"),
+				WidgetModel.WidgetDatum(id: "3", name: "CCC"),
+				WidgetModel.WidgetDatum(id: "4", name: "DDDD"),
+			]
+			WidgetModel.widgetData = widgetData
+			WidgetCenter.shared.reloadAllTimelines()
+		}
 		
 		return true
 	}
