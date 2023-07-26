@@ -267,6 +267,31 @@ struct UpdateDatumIntent: AppIntent {
 
 }
 
+struct PlayStationIntent: AudioPlaybackIntent {
+
+	// the name of the action in Shortcuts
+	static var title: LocalizedStringResource = "Play Station"
+	
+	// description of the action in Shortcuts
+	// category name allows you to group actions - shown when tapping on an app in the Shortcuts library
+	static var description: IntentDescription = IntentDescription("Play a station.", categoryName: "Editing")
+	
+	@Parameter(title: "Name", description: "The name of the station", requestValueDialog: IntentDialog("What is the station?"))
+	var name: String
+	
+	// How the summary will appear in the shortcut action.
+	// More parameters are included below the fold in the trailing closure. In Shortcuts, they are listed in the reverse order they are listed here
+	static var parameterSummary: some ParameterSummary {
+		Summary("Play \(\.$name)")
+	}
+
+	//@MainActor // <-- include if the code needs to be run on the main thread
+	func perform() async throws -> some IntentResult {
+		return .result()
+	}
+
+}
+
 // NOTE: The following provider allows the AppIntent to show up in a Spotlight search.
 
 struct IntentionalAppShortcutsProvider: AppShortcutsProvider {
