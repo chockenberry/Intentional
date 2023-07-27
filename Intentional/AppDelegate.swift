@@ -37,10 +37,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		
 		DispatchQueue.global(qos: .userInitiated).async {
 			let context = INMediaUserContext()
-			context.numberOfLibraryItems = 123
-			
-			context.subscriptionStatus = .notSubscribed
-			
+			context.numberOfLibraryItems = 99999
+			context.subscriptionStatus = .subscribed
 			context.becomeCurrent()
 		}
 
@@ -61,24 +59,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		// Use this method to release any resources that were specific to the discarded scenes, as they will not return.
 	}
 
+	/*
 	func application(_ application: UIApplication, handle intent: INIntent, completionHandler: @escaping (INIntentResponse) -> Void) {
 		if let playMediaIntent = intent as? INPlayMediaIntent {
 			handlePlayMediaIntent(playMediaIntent, completion: completionHandler)
 		}
 		completionHandler(INPlayMediaIntentResponse(code: .failure, userActivity: nil))
 	}
-
+	 */
+	
 	func application(_ application: UIApplication, handlerFor intent: INIntent) -> Any? {
-		if let mediaIntent = intent as? INPlayMediaIntent {
-			debugLog("mediaSearch = \(String(describing: mediaIntent.mediaSearch))")
+		if intent is INPlayMediaIntent {
 			return IntentHandler()
-			//guard let mediaItem = mediaIntent.mediaItems?.first else { return nil }
-			//guard let identifier = mediaItem.identifier else { return nil }
 		}
 		
 		return nil
 	}
 	
+	/*
 	func handlePlayMediaIntent(_ intent: INPlayMediaIntent, completion: @escaping (INPlayMediaIntentResponse) -> Void) {
 		// Extract the first media item from the intent's media items (these will have been resolved in the extension).
 #if true
@@ -99,14 +97,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 		}
 #endif
 	}
+	*/
 	
 }
+
+// NOTE: In-app IntentHandlers must have UIApplicationSupportsMultipleScenes = YES in Info.plist.
 
 class IntentHandler: NSObject, INPlayMediaIntentHandling {
 	
 	func resolveMediaItems(for intent: INPlayMediaIntent, with completion: @escaping ([INPlayMediaMediaItemResolutionResult]) -> Void) {
-		completion([INPlayMediaMediaItemResolutionResult.unsupported(forReason: .unsupportedMediaType)])
-		
+#if true
+		debugLog("intent = \(String(describing: intent))")
 		debugLog("mediaSearch = \(String(describing: intent.mediaSearch))")
 
 		/*
@@ -138,6 +139,14 @@ class IntentHandler: NSObject, INPlayMediaIntentHandling {
 		else {
 			completion([INPlayMediaMediaItemResolutionResult.unsupported(forReason: .unsupportedMediaType)])
 		}
+#else
+#if DEBUG
+		completion([INPlayMediaMediaItemResolutionResult.unsupported(forReason: .unsupportedMediaType)])
+#else
+#error("DEBUG code enabled in release build.")
+#endif
+#endif
+		
 //		resolveMediaItems(for: intent.mediaSearch) { optionalMediaItems in
 //			guard let mediaItems = optionalMediaItems else {
 //				completion([INPlayMediaMediaItemResolutionResult.unsupported()])
@@ -147,15 +156,25 @@ class IntentHandler: NSObject, INPlayMediaIntentHandling {
 //		}
 	}
 	
-	// The handler for INPlayMediaIntent returns the .handleInApp response code, so that the main app can be background
-	// launched and begin playback. The extension is short-lived, and if playback was begun in the extension, it could
-	// abruptly end when the extension is terminated by the system.
+	// In an Intents extension, the handler for INPlayMediaIntent returns the .handleInApp response code, so that the main app can be background
+	// launched and begin playback. The extension is short-lived, and if playback was begun in the extension, it could abruptly end when the extension
+	// is terminated by the system.
 	//
-	// On tvOS, .continueInApp is used instead (and brings app to foreground)       
+	// On tvOS, .continueInApp is used instead (and brings app to foreground)
+	//
+	// Since we're handling it in app, .success is used when a media item was found, otherwise the app is brought to the foreground with .continueInApp.
+	
 	func handle(intent: INPlayMediaIntent, completion: (INPlayMediaIntentResponse) -> Void) {
-		debugLog("intent = \(String(describing: intent))")
-		debugLog("mediaSearch = \(String(describing: intent.mediaSearch))")
-		completion(INPlayMediaIntentResponse(code: .success, userActivity: nil))
+		//debugLog("intent = \(String(describing: intent))")
+		//debugLog("mediaSearch = \(String(describing: intent.mediaSearch))")
+		
+		if let mediaItemTitle = intent.mediaItems?.first?.title {
+			debugLog("playing title = \(mediaItemTitle)")
+			completion(INPlayMediaIntentResponse(code: .success, userActivity: nil))
+		}
+		else {
+			completion(INPlayMediaIntentResponse(code: .continueInApp, userActivity: nil))
+		}
 	}
 	
 }

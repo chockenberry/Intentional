@@ -7,6 +7,7 @@
 
 import Foundation
 import AppIntents
+import WidgetKit
 
 // NOTE: These AppIntents are used in both the app and widget.
 
@@ -212,16 +213,16 @@ struct UpdateModelIntent: AppIntent {
 	@Parameter(title: "Count", description: "The model's count", default: 0, requestValueDialog: IntentDialog("What is the count?"))
 	var count: Int
 	
-	@Parameter(title: "Selected ID", description: "The model's ID", requestValueDialog: IntentDialog("What is the selected ID?"))
+	@Parameter(title: "Selected ID", description: "The model's selected ID", requestValueDialog: IntentDialog("What is the selected ID?"))
 	var selectedId: String
 	
 	// How the summary will appear in the shortcut action.
 	// More parameters are included below the fold in the trailing closure. In Shortcuts, they are listed in the reverse order they are listed here
 	static var parameterSummary: some ParameterSummary {
-		Summary("Update \(\.$selectedId) with \(\.$count)")
+		Summary("Update model with \(\.$selectedId) and \(\.$count)")
 	}
 
-#if true // NOTE: The following code generates a weird "malformed JSON" compile error.
+#if false // NOTE: The following code generates a weird "malformed JSON" compile error.
 	//@MainActor // <-- include if the code needs to be run on the main thread
 	func perform() async throws -> some ReturnsValue<ShortcutsModelEntity> {
 
@@ -256,10 +257,10 @@ struct UpdateDatumIntent: AppIntent {
 	// How the summary will appear in the shortcut action.
 	// More parameters are included below the fold in the trailing closure. In Shortcuts, they are listed in the reverse order they are listed here
 	static var parameterSummary: some ParameterSummary {
-		Summary("Update \(\.$datum) with \(\.$name)")
+		Summary("Update datum \(\.$datum) with \(\.$name)")
 	}
 
- #if true // NOTE: The following code generates a weird "malformed JSON" compile error.
+ #if false // NOTE: The following code generates a weird "malformed JSON" compile error.
 	//@MainActor // <-- include if the code needs to be run on the main thread
 	func perform() async throws -> some ReturnsValue<ShortcutsDatumEntity> {
 
@@ -282,27 +283,58 @@ struct UpdateDatumIntent: AppIntent {
 
 }
 
-struct PlayStationIntent: AudioPlaybackIntent {
-
+struct IncrementCountIntent: AppIntent {
+	
 	// the name of the action in Shortcuts
-	static var title: LocalizedStringResource = "Play Station"
+	static var title: LocalizedStringResource = "Increment Count"
 	
 	// description of the action in Shortcuts
 	// category name allows you to group actions - shown when tapping on an app in the Shortcuts library
-	static var description: IntentDescription = IntentDescription("Play a station.", categoryName: "Editing")
-	
-	@Parameter(title: "Name", description: "The name of the station", requestValueDialog: IntentDialog("What is the station?"))
-	var name: String
+	static var description: IntentDescription = IntentDescription("Increment the model's count.", categoryName: "Editing")
 	
 	// How the summary will appear in the shortcut action.
 	// More parameters are included below the fold in the trailing closure. In Shortcuts, they are listed in the reverse order they are listed here
 	static var parameterSummary: some ParameterSummary {
-		Summary("Play \(\.$name)")
+		Summary("Increment count")
+	}
+
+	func perform() async throws -> some IntentResult {
+		WidgetModel.incrementCount()
+		WidgetCenter.shared.reloadAllTimelines()
+		debugLog("currentCount = \(WidgetModel.currentCount)")
+		return .result()
+	}
+}
+
+struct StartStationIntent: AudioPlaybackIntent {
+
+	//static let intentClassName = "INPlayMediaIntent"
+	
+	// the name of the action in Shortcuts
+	static var title: LocalizedStringResource = "Start Station"
+	
+	// description of the action in Shortcuts
+	// category name allows you to group actions - shown when tapping on an app in the Shortcuts library
+	static var description: IntentDescription = IntentDescription("Start a station.", categoryName: "Editing")
+	
+	@Parameter(title: "Station", description: "The name of the station", requestValueDialog: IntentDialog("What is the station?"))
+	var station: ShortcutsDatumEntity
+	
+	// How the summary will appear in the shortcut action.
+	// More parameters are included below the fold in the trailing closure. In Shortcuts, they are listed in the reverse order they are listed here
+	static var parameterSummary: some ParameterSummary {
+		Summary("Start \(\.$station)")
 	}
 
 	//@MainActor // <-- include if the code needs to be run on the main thread
 	func perform() async throws -> some IntentResult {
-		debugLog("name = \(name)")
+//		guard let name else {
+//			throw $name.needsValueError("What is the station name?")
+//		}
+		// NOTE: requestDisambiguation and requestConfirmation can be used at this point.
+		
+		try await requestConfirmation(result: .result(value: station, dialog: "Play station with ID = \(station.id)"), confirmationActionName: .go, showPrompt: true)
+		debugLog("name = \(station.name)")
 		return .result()
 	}
 
@@ -317,24 +349,43 @@ struct IntentionalAppShortcutsProvider: AppShortcutsProvider {
 	}
 
 	static var appShortcuts: [AppShortcut] {
-		AppShortcut(
-			intent: UpdateModelIntent(),
-			phrases: [
-				"Update a \(.applicationName) model"
-				// NOTE: Multiple phrases can be supplied to aid with matching (e.g. with Siri)
-			],
-			shortTitle: "Update Model",
-			systemImageName: "rectangle.and.pencil.and.ellipsis"
-		)
-		AppShortcut(
-			intent: UpdateDatumIntent(),
-			phrases: [
-				"Update a \(.applicationName) datum"
-			],
-			shortTitle: "Update Datum",
-			systemImageName: "list.bullet"
-		)
-
+		return [
+			AppShortcut(
+				intent: UpdateModelIntent(),
+				phrases: [
+					"Update \(.applicationName) model"
+					// NOTE: Multiple phrases can be supplied to aid with matching (e.g. with Siri)
+				],
+				shortTitle: "Update Model",
+				systemImageName: "rectangle.and.pencil.and.ellipsis"
+			),
+			AppShortcut(
+				intent: UpdateDatumIntent(),
+				phrases: [
+					"Update \(.applicationName) datum"
+				],
+				shortTitle: "Update Datum",
+				systemImageName: "list.bullet"
+			),
+			AppShortcut(
+				intent: IncrementCountIntent(),
+				phrases: [
+					"Increment count in \(.applicationName)",
+					"Increment count on \(.applicationName)"
+				],
+				shortTitle: "Increment Count",
+				systemImageName: "plus.circle"
+			),
+			AppShortcut(
+				intent: StartStationIntent(),
+				phrases: [
+					"Start station in \(.applicationName)",
+					"Start station on \(.applicationName)"
+				],
+				shortTitle: "Start station",
+				systemImageName: "play.fill"
+			)
+		]
 	}
 }
 
