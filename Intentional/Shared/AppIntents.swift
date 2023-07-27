@@ -259,9 +259,9 @@ struct UpdateDatumIntent: AppIntent {
 		}
 		if let index {
 			widgetData[index].name = name
+			datum.name = name
 		}
 		WidgetModel.widgetData = widgetData
-
 		return .result(value: datum)
 	}
 
@@ -287,6 +287,7 @@ struct PlayStationIntent: AudioPlaybackIntent {
 
 	//@MainActor // <-- include if the code needs to be run on the main thread
 	func perform() async throws -> some IntentResult {
+		debugLog("name = \(name)")
 		return .result()
 	}
 
