@@ -10,8 +10,10 @@ import AppIntents
 
 // NOTE: These AppIntents are used in both the app and widget.
 
-// NOTE: This is an example of an AppIntent without parameters.
+// NOTE: This is an example of an AppIntent without parameters. The availability check is because the app can
+// run on iOS 16, but the widget that uses this intent has a deployment target for iOS 17.
 
+@available(iOS 17.0, *)
 struct WidgetCountIntent: AppIntent {
 	
 	static var title: LocalizedStringResource = "Increment counter"
@@ -30,6 +32,7 @@ struct WidgetCountIntent: AppIntent {
 // Thanks to Adam Overholtzer (@adam@iosdev.space), Michael Gorbach (@mgorbach@mastodon.social),
 // and Luca Bernardi (@lucabernardi@mastodon.social) for the help in in figuring it out.
 
+@available(iOS 17.0, *)
 struct WidgetSelectIntent: AppIntent {
 	
 	static var title: LocalizedStringResource = "Select by ID"
@@ -218,6 +221,7 @@ struct UpdateModelIntent: AppIntent {
 		Summary("Update \(\.$selectedId) with \(\.$count)")
 	}
 
+#if true // NOTE: The following code generates a weird "malformed JSON" compile error.
 	//@MainActor // <-- include if the code needs to be run on the main thread
 	func perform() async throws -> some ReturnsValue<ShortcutsModelEntity> {
 
@@ -227,6 +231,11 @@ struct UpdateModelIntent: AppIntent {
 
 		return .result(value: entity)
 	}
+#else
+	func perform() async throws -> some IntentResult {
+		return .result()
+	}
+#endif
 }
 
 struct UpdateDatumIntent: AppIntent {
@@ -250,6 +259,7 @@ struct UpdateDatumIntent: AppIntent {
 		Summary("Update \(\.$datum) with \(\.$name)")
 	}
 
+ #if true // NOTE: The following code generates a weird "malformed JSON" compile error.
 	//@MainActor // <-- include if the code needs to be run on the main thread
 	func perform() async throws -> some ReturnsValue<ShortcutsDatumEntity> {
 
@@ -264,6 +274,11 @@ struct UpdateDatumIntent: AppIntent {
 		WidgetModel.widgetData = widgetData
 		return .result(value: datum)
 	}
+ #else
+	 func perform() async throws -> some IntentResult {
+		 return .result()
+	 }
+ #endif
 
 }
 
@@ -322,3 +337,4 @@ struct IntentionalAppShortcutsProvider: AppShortcutsProvider {
 
 	}
 }
+

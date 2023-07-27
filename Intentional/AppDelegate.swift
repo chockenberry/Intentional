@@ -129,8 +129,10 @@ class IntentHandler: NSObject, INPlayMediaIntentHandling {
 		 */
 		
 		if let mediaSearch = intent.mediaSearch {
-			let mediaItem = INMediaItem(identifier: "1234-abcd", title: mediaSearch.mediaName, type: .radioStation, artwork: nil)
-			let mediaItems = [ mediaItem ]
+			let artwork = INImage(named: "Placeholder")
+			let mediaItem = INMediaItem(identifier: "1234-abcd", title: mediaSearch.mediaName, type: .radioStation, artwork: artwork)
+			let alternateMediaItem = INMediaItem(identifier: "5678-dcba", title: "Alternate", type: .radioStation, artwork: artwork)
+			let mediaItems = [ mediaItem, alternateMediaItem ]
 			completion(INPlayMediaMediaItemResolutionResult.successes(with: mediaItems))
 		}
 		else {
@@ -148,6 +150,8 @@ class IntentHandler: NSObject, INPlayMediaIntentHandling {
 	// The handler for INPlayMediaIntent returns the .handleInApp response code, so that the main app can be background
 	// launched and begin playback. The extension is short-lived, and if playback was begun in the extension, it could
 	// abruptly end when the extension is terminated by the system.
+	//
+	// On tvOS, .continueInApp is used instead (and brings app to foreground)       
 	func handle(intent: INPlayMediaIntent, completion: (INPlayMediaIntentResponse) -> Void) {
 		debugLog("intent = \(String(describing: intent))")
 		debugLog("mediaSearch = \(String(describing: intent.mediaSearch))")

@@ -31,7 +31,7 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      intentQueryString = "Play butt stompin&apos; grooves on Intentional"
+      intentQueryString = "Play that boogie woogie on Intentional"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -53,7 +53,7 @@
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
-      intentQueryString = "Play butt stompin&apos; grooves on Intentional"
+      intentQueryString = "Play that boogie woogie on Intentional"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
