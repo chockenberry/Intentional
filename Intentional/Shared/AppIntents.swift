@@ -301,10 +301,18 @@ struct IncrementCountIntent: AppIntent {
 	func perform() async throws -> some IntentResult {
 		WidgetModel.incrementCount()
 		WidgetCenter.shared.reloadAllTimelines()
+		
+		// NOTE: Make sure that the WidgetCenter reload only happens once. It will kick off an animated transistion and reloads that
+		// occur during that animation can interrupt it.
+		
 		debugLog("currentCount = \(WidgetModel.currentCount)")
 		return .result()
 	}
 }
+
+// NOTE: AudioPlaybackIntent can be used when you want to ensure that the AppIntent is executed within the context of the app
+// (as opposed to the widget's context). This is important for things like starting a background audio session, which is not
+// possible in an extension context.
 
 struct StartStationIntent: AudioPlaybackIntent {
 

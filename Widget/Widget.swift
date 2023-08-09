@@ -50,6 +50,7 @@ struct WidgetEntryView : View {
     var entry: Provider.Entry
 
 	@Environment(\.widgetFamily) var widgetFamily: WidgetFamily
+	@Environment(\.widgetContentMargins) var widgetContentMargins
 
 	// NOTE: The WidgetModel needs a group container: make sure that entitlement is granted
 	// to the widget extension.
@@ -77,42 +78,65 @@ struct WidgetEntryView : View {
 	
 	var widgetData = WidgetModel.widgetData
 	
-    var body: some View {
-		if widgetData.isEmpty {
-			Text("No Widget Data")
-		}
-		else {
-			HStack {
-				ForEach(widgetData) { widgetDatum in
-					Button(intent: WidgetSelectIntent(selectingId: widgetDatum.id)) {
-						Text(widgetDatum.name)
+	var body: some View {
+		VStack(spacing: 8) {
+			// Controls
+		
+			if widgetData.isEmpty {
+				Text("No Widget Data")
+			}
+			else {
+				HStack {
+					ForEach(widgetData) { widgetDatum in
+						Button(intent: WidgetSelectIntent(selectingId: widgetDatum.id)) {
+							Text(widgetDatum.name)
+						}
+						.buttonStyle(.borderedProminent)
+						.tint(entry.selectedId == widgetDatum.id ? .green : .red)
+					}
+					Button(intent: WidgetCountIntent()) {
+						Image(systemName: "plus")
 					}
 					.buttonStyle(.borderedProminent)
-					.tint(entry.selectedId == widgetDatum.id ? .green : .red)
+					.tint(.blue)
 				}
-				Button(intent: WidgetCountIntent()) {
-					Image(systemName: "plus")
+				.onAppear {
+					// NOTE: See the note in WidgetModel.swift about group containers issues for widget previews. There's
+					// a reason this debug logging is here.
+					debugLog("widgetData = \(widgetData)")
+					let groupContainerId = "group.com.iconfactory.Intentional"
+					if let groupContainerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupContainerId) {
+						debugLog("groupContainerUrl = `\(groupContainerUrl.path(percentEncoded: false))`")
+					}
+					
 				}
-				.buttonStyle(.borderedProminent)
-				.tint(.blue)
 			}
-			.onAppear {
-				// NOTE: See the note in WidgetModel.swift about group containers issues for widget previews. There's
-				// a reason this debug logging is here.
-				debugLog("widgetData = \(widgetData)")
-				let groupContainerId = "group.com.iconfactory.Intentional"
-				if let groupContainerUrl = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupContainerId) {
-					debugLog("groupContainerUrl = `\(groupContainerUrl.path(percentEncoded: false))`")
+			
+			// Status
+			
+			VStack(alignment: .leading, spacing: 0) {
+				VStack(alignment: .leading, spacing: 0) {
+					Text("Updated at \(entry.date.formatted(date: .omitted, time: .standard))")
+						.foregroundStyle(.secondary)
+					Text("Count: entry = \(entry.currentCount), model = \(WidgetModel.currentCount)")
+						.foregroundStyle(.primary)
+					Text("Selected: entry = \(entry.selectedId), model = \(WidgetModel.selectedId)")
+						.foregroundStyle(.secondary)
 				}
-
+				.padding(EdgeInsets(top: 0, leading: widgetContentMargins.leading, bottom: widgetContentMargins.bottom, trailing: widgetContentMargins.trailing))
 			}
+			.layoutPriority(1)
+			.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+			.background(.thinMaterial)
+			.padding(EdgeInsets(top: 0, leading: -widgetContentMargins.leading, bottom: -widgetContentMargins.bottom, trailing: -widgetContentMargins.trailing))
 		}
-        VStack {
-			Text("Updated at \(entry.date.formatted(date: .omitted, time: .standard))")
-			Text("Count: entry = \(entry.currentCount), model = \(WidgetModel.currentCount)")
-			Text("Selected: entry = \(entry.selectedId), model = \(WidgetModel.selectedId)")
-        }
-    }
+		.containerBackground(for: .widget) {
+			Image(WidgetModel.currentCount % 2 == 0 ? "Background" : "BackgroundGray")
+				.resizable()
+				.scaledToFill()
+				.padding(-100) // to get the center of the image in the material
+		}
+	}
 }
 
 struct IntentionalWidget: Widget {
@@ -122,7 +146,6 @@ struct IntentionalWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             if #available(iOS 17.0, *) {
                 WidgetEntryView(entry: entry)
-                    .containerBackground(.fill.tertiary, for: .widget)
             } else {
                 WidgetEntryView(entry: entry)
                     .padding()
@@ -139,5 +162,5 @@ struct IntentionalWidget: Widget {
 	IntentionalWidget()
 } timeline: {
     SimpleEntry(date: .now)
-	SimpleEntry(date: .now)
+	//SimpleEntry(date: .now)
 }
