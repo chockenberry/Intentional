@@ -23,6 +23,16 @@ struct WidgetCountIntent: AppIntent {
 	func perform() async throws -> some IntentResult {
 		WidgetModel.incrementCount()
 		debugLog("currentCount = \(WidgetModel.currentCount)")
+		
+#if false
+		// NOTE: Make sure that timelines are not reloaded soon after the IntentResult returned. The code below
+		// will cause the transition after the widget interaction to go janky.
+		Task {
+			usleep(200_000)
+			WidgetCenter.shared.reloadAllTimelines()
+		}
+#endif
+		
 		return .result()
 	}
 	
@@ -302,7 +312,7 @@ struct IncrementCountIntent: AppIntent {
 		WidgetModel.incrementCount()
 		WidgetCenter.shared.reloadAllTimelines()
 		
-		// NOTE: Make sure that the WidgetCenter reload only happens once. It will kick off an animated transistion and reloads that
+		// NOTE: Make sure that the WidgetCenter reload only happens once. It may kick off an animated transistion and reloads that
 		// occur during that animation can interrupt it.
 		
 		debugLog("currentCount = \(WidgetModel.currentCount)")
